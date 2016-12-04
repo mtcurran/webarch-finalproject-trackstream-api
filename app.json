@@ -1,0 +1,8 @@
+{
+  "name": "Start on Heroku: Node.js",
+  "description": "Trackstream (API): Find your favorite songs from TV and movies and stream them",
+  "repository": "https://github.com/INFO253-FL2016/final-project-api-trackstream",
+  "logo": "http://node-js-sample.herokuapp.com/node.svg",
+  "keywords": ["node", "express", "static"],
+  "image": "heroku/nodejs"
+}
