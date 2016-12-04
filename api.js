@@ -93,8 +93,12 @@ app.post('/tunefind_get_movie_songs', function(req, res) {
 			url: url
 		},
 		function(error, response, body) {
-			populateSongsDict(body);
-			res.json(songsDict);
+			if (error || response.statusCode == 404) {
+				res.status(404).send('Error 404: Invalid Movie Name');
+			} else {
+				populateSongsDict(body);
+				res.json(songsDict);
+			}			
 		}
 	)
 });
@@ -109,8 +113,12 @@ app.post('/tunefind_get_show_seasons', function (req, res, next) {
 			url: url
 		},
 		function(error, response, body) {
-			populateSeasonsDict(body);
-			res.json(seasonsDict);
+			if (error || response.statusCode == 404) {
+				res.status(404).send('Error 404: Invalid Show Name');
+			} else {			
+				populateSeasonsDict(body);
+				res.json(seasonsDict);
+			}
 		}
 	)
 });
@@ -135,7 +143,6 @@ app.post('/tunefind_get_show_songs', function (req, res, next) {
 	selectedEpisode = req.body.selectedEpisode;
 	episodeURL = episodesDict[selectedEpisode][2]
 	url = 'https://' + username + ':' + pass + '@' + episodeURL.substring(8);
-	console.log("The url for the selected season is: " + url);
 
 	request(
 		{
@@ -150,7 +157,8 @@ app.post('/tunefind_get_show_songs', function (req, res, next) {
 
 app.post('/youtube_search', function (req, res, next) {
 	youtubeSearch = req.body.youtubeSearch;
-	youtubeSearch = youtubeSearch.replace(/(\||-)/g, " "); 
+	youtubeSearch = youtubeSearch.replace(/(\||-)/g, " ");
+	youtubeSearch = youtubeSearch.replace(/&/g, "and"); 
 	youtubeSearch = encodeURI(youtubeSearch);
 	url = 'https://www.googleapis.com/youtube/v3/search?key=AIzaSyCqzpPsxZBRhNB2UwO4TWpHANu0PXtxyT4&part=snippet&type=video&maxResults=1&q=' + youtubeSearch;
 
