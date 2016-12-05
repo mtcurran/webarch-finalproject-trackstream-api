@@ -8,9 +8,6 @@ app.use(bodyParser.json());
 // Global variables for later use.
 var username = "374a4ae1df4ba412cfb9f6485f426143";
 var pass = "b6cb8aac2c4f558eeff122a4f2bdbe48";
-var seasonsDict;
-var episodesDict;
-var songsDict;
 
 /**
  * Takes in TuneFind's API response for a search on a TV show name
@@ -23,7 +20,7 @@ var songsDict;
  * @param {Object} body - the body of the response in JSON format
  */
  function populateSeasonsDict(body) {
- 	seasonsDict = {};
+ 	var seasonsDict = {};
  	parsedBody = JSON.parse(body);
  	seasons = parsedBody["seasons"];
  	for (i = 0; i < seasons.length; i++) {
@@ -31,8 +28,9 @@ var songsDict;
  		songCount = seasons[i].song_count;
  		episodeCount = seasons[i].episode_count;
  		seasonURL = seasons[i].tunefind_api_url;
- 		seasonsDict[seasonNumber] = [songCount, episodeCount, seasonURL];
+ 		seasonsDict[seasonNumber] = [episodeCount, seasonURL];
  	}
+ 	return seasonsDict;
  };
 
 /**
@@ -46,7 +44,7 @@ var songsDict;
  * @param {Object} body - the body of the response in JSON format
  */
  function populateEpisodesDict(body) {
- 	episodesDict = {};
+ 	var episodesDict = {};
  	parsedBody = JSON.parse(body);
  	episodes = parsedBody["episodes"];
  	for (i = 0; i < episodes.length; i++) {
@@ -54,8 +52,9 @@ var songsDict;
  		episodeName = episodes[i].name;
  		songCount = episodes[i].song_count;
  		episodeURL = episodes[i].tunefind_api_url;
- 		episodesDict[episodeNumber] = [episodeName, songCount, episodeURL];
+ 		episodesDict[episodeNumber] = [episodeName, episodeURL];
  	}
+ 	return episodesDict;
  };
 
 /**
@@ -66,7 +65,7 @@ var songsDict;
  * @param {Object} body - the body of the response in JSON format
  */
 function populateSongsDict(body) {
-	songsDict = {};
+	var songsDict = {};
 	parsedBody = JSON.parse(body);
 	songs = parsedBody["songs"];
 	for (i = 0; i < songs.length; i++) {
@@ -96,7 +95,7 @@ app.post('/tunefind_get_movie_songs', function(req, res) {
 			if (error || response.statusCode == 404) {
 				res.status(404).send('Error 404: Invalid Movie Name');
 			} else {
-				populateSongsDict(body);
+				var songsDict = populateSongsDict(body);
 				res.json(songsDict);
 			}			
 		}
@@ -116,7 +115,7 @@ app.post('/tunefind_get_show_seasons', function (req, res, next) {
 			if (error || response.statusCode == 404) {
 				res.status(404).send('Error 404: Invalid Show Name');
 			} else {			
-				populateSeasonsDict(body);
+				var seasonsDict = populateSeasonsDict(body);
 				res.json(seasonsDict);
 			}
 		}
@@ -124,32 +123,30 @@ app.post('/tunefind_get_show_seasons', function (req, res, next) {
 });
 
 app.post('/tunefind_get_show_episodes', function (req, res, next) {
-	selectedSeason = req.body.selectedSeason;
-	seasonURL = seasonsDict[selectedSeason][2]
-	url = 'https://' + username + ':' + pass + '@' + seasonURL.substring(8);
+	selectedSeasonURL = req.body.selectedSeason;
+	url = 'https://' + username + ':' + pass + '@' + selectedSeasonURL.substring(8);
 
 	request(
 		{
 			url: url
 		},
 		function(error, response, body) {
-			populateEpisodesDict(body);
+			var episodesDict = populateEpisodesDict(body);
 			res.json(episodesDict);
 		}
 	)
 });
 
 app.post('/tunefind_get_show_songs', function (req, res, next) {
-	selectedEpisode = req.body.selectedEpisode;
-	episodeURL = episodesDict[selectedEpisode][2]
-	url = 'https://' + username + ':' + pass + '@' + episodeURL.substring(8);
+	selectedEpisodeURL = req.body.selectedEpisode;
+	url = 'https://' + username + ':' + pass + '@' + selectedEpisodeURL.substring(8);
 
 	request(
 		{
 			url: url
 		},
 		function(error, response, body) {
-			populateSongsDict(body);
+			var songsDict = populateSongsDict(body);
 			res.json(songsDict);
 		}
 	)
