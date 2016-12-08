@@ -15,9 +15,10 @@ var pass = "b6cb8aac2c4f558eeff122a4f2bdbe48";
  * songs and episodes are in each season. For each season, it will also 
  * extract the TuneFind API URL to search for that season. This will be useful
  * to list all the episodes once the user has selected a season. The resulting
- * dictionary has this format: {season number: [song count, episode count, season API URL]}
- * Nothing is returned, but the global variable `seasonsDict` gets populated
+ * dictionary has this format: {season number: [episode count, season API URL]}
  * @param {Object} body - the body of the response in JSON format
+ * @return {Object} - A dictionary where the key is the season number, & 
+ * the value is a list with the episode count and season API URL
  */
  function populateSeasonsDict(body) {
  	var seasonsDict = {};
@@ -40,8 +41,9 @@ var pass = "b6cb8aac2c4f558eeff122a4f2bdbe48";
  * extract the TuneFind API URL to search for that episode. This will be useful
  * to list all the songs & scenes once the user has selected an episode. The resulting
  * dictionary has this format: {episode number: [episode name, song count, episode API URL]}
- * Nothing is returned, but the global variable `episodesDict` gets populated
  * @param {Object} body - the body of the response in JSON format
+ * @return {Object} - A dictionary where the key is the episode number, & 
+ * the value is a list with the episode number and episode API URL
  */
  function populateEpisodesDict(body) {
  	var episodesDict = {};
@@ -61,8 +63,9 @@ var pass = "b6cb8aac2c4f558eeff122a4f2bdbe48";
  * Takes in TuneFind's API response for a search on a episode within a season for a TV show
  * and parses it to extract song names, artist names, and the scene for each song if applicable. 
  * The resulting dictionary has this format: {song name: [artist name, scene]}
- * Nothing is returned, but the global variable `songsDict` gets populated
  * @param {Object} body - the body of the response in JSON format
+ * @return {Object} A dictionary where the key is the song name, & 
+ * the value is a list with the artist name, and scene if applicable
  */
 function populateSongsDict(body) {
 	var songsDict = {};
